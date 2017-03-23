@@ -1,86 +1,47 @@
-melanomendata <- function(directory, accesstime = 1, doorlooptijd = 1) {
+melanomendata <- function(directory) {
   
   if (directory == "MelanomenData") {
     setwd("/Users/lukas/Documents/Uni Maas/Medicine/Jaar  6/Onderzoek_Dermatologie/MelanomenData/")
-    print("Getting the results of the 2016 Database")
-    melanomen2016 <- read.xls("2016.xls", method = "tab", na.strings = "-")      
+    print("Getting the results of the 2015-2016 Databases")
+    melanomen2016 <- read.xls("2016.xlsx", method = "tab", na.strings = "-") 
+    melanomen2015 <- read.xls("2015.xlsx", method = "tab", na.strings = "-")
   } else {
     print("Directory not found")
   }
-  ## lt_mean <- list()
-  ## lt_sd <- list()
   
-  if (accesstime == "toegangstijd") {
-      accesstime <- melanomen2016[,14]
-      a_mean <- mean(accesstime, na.rm = TRUE)
-      a_sd <- round(sd(accesstime, na.rm = TRUE), digits = 3)
-      print(c("De toegangstijd is gemiddeld:", a_mean, "dagen"))
-      print(c("De standard deviatie van de toegangstijd is:", a_sd, "dagen"))
-  } 
+  listmean2015 <- lapply(melanomen2015[,14:22], mean, na.rm = TRUE)
+  listmean2016 <- lapply(melanomen2016[,14:22], mean, na.rm = TRUE)
+  ## str(listmean)
+  ## print(round(listmean$Toegangstijd, digits = 2))
+  listsd <- lapply(melanomen2015[,14:22], sd, na.rm = TRUE)
+  listsd <- lapply(melanomen2016[,14:22], sd, na.rm = TRUE)
+  ## str(listsd)
+  ## print(round(listsd$Toegangstijd, digits = 2))
+  ## allttests <- list()
   
-  if (doorlooptijd == "diagn excisie") {
-    accesstime <- melanomen2016[,15]
-    lt_mean <- mean(accesstime, na.rm = TRUE)
-    lt_sd <- round(sd(accesstime, na.rm = TRUE), digits = 3)
-    print(c("De doorlooptijd is gemiddeld:", lt_mean, "dagen"))
-    print(c(" De standarddeviattie van de doorlooptijd is:", lt_sd, "dagen"))
-  } 
+  ## shapirolist <- list(shapiro2016)
+  ## print(shapirolist)
   
-  if (doorlooptijd == "histol uitslag") {
-    accesstime <- melanomen2016[,16]
-    lt_mean <- mean(accesstime, na.rm = TRUE)
-    lt_sd <- round(sd(accesstime, na.rm = TRUE), digits = 3)
-    print(c("De doorlooptijd is gemiddeld:", lt_mean, "dagen"))
-    print(c(" De standarddeviattie van de doorlooptijd is:", lt_sd, "dagen"))
-  } 
+  testresult <- list()
   
-  if (doorlooptijd == "radiol onderzoek") {
-    accesstime <- melanomen2016[,17]
-    lt_mean <- mean(accesstime, na.rm = TRUE)
-    lt_sd <- round(sd(accesstime, na.rm = TRUE), digits = 3)
-    print(c("De doorlooptijd is gemiddeld:", lt_mean, "dagen"))
-    print(c(" De standarddeviattie van de doorlooptijd is:", lt_sd, "dagen"))
-  } 
+  for (i in 14:22) {
+    shapiro2016 <- shapiro.test(melanomen2016[,i])
+    shapiro2016p <- shapiro2016$p.value
+    shapiro2015 <- shapiro.test(melanomen2015[,i])
+    shapiro2015p <- shapiro2015$p.value
+    
+    if (shapiro2016p > 0.05 & shapiro2015p > 0.05) {
+      testresult[[i]] <- t.test(melanomen2015[,i], na.rm = TRUE)
+    } else {
+      testresult[[i]] <- wilcox.test(melanomen2015[,i], melanomen2016[,i], na.rm = TRUE, conf.int = TRUE, exact = FALSE)
+    }
+
+  }
   
-  if (doorlooptijd == "nucl onderzoek") {
-    accesstime <- melanomen2016[,18]
-    lt_mean <- mean(accesstime, na.rm = TRUE)
-    lt_sd <- round(sd(accesstime, na.rm = TRUE), digits = 3)
-    print(c("De doorlooptijd is gemiddeld:", lt_mean, "dagen"))
-    print(c(" De standarddeviattie van de doorlooptijd is:", lt_sd, "dagen"))
-  } 
+  nulltest <- Filter(Negate(is.null), testresult)
+  print(nulltest)
+    
+  ## hist(melanomen2016[,17], main = "Toegangstijd tot 1e afspraak", xlab = "Aantal", ylab = "Tijd")
   
-  if (doorlooptijd == "uitslaggesprek") {
-    accesstime <- melanomen2016[,19]
-    lt_mean <- mean(accesstime, na.rm = TRUE)
-    lt_sd <- round(sd(accesstime, na.rm = TRUE), digits = 3)
-    print(c("De doorlooptijd is gemiddeld:", lt_mean, "dagen"))
-    print(c(" De standarddeviattie van de doorlooptijd is:", lt_sd, "dagen"))
-  } 
-  
-  if (doorlooptijd == "chirurg") {
-    accesstime <- melanomen2016[,20]
-    lt_mean <- mean(accesstime, na.rm = TRUE)
-    lt_sd <- round(sd(accesstime, na.rm = TRUE), digits = 3)
-    print(c("De doorlooptijd is gemiddeld:", lt_mean, "dagen"))
-    print(c(" De standarddeviattie van de doorlooptijd is:", lt_sd, "dagen"))
-  } 
-  
-  if (doorlooptijd == "ther excisie") {
-    accesstime <- melanomen2016[,21]
-    lt_mean <- mean(accesstime, na.rm = TRUE)
-    lt_sd <- round(sd(accesstime, na.rm = TRUE), digits = 3)
-    print(c("De doorlooptijd is gemiddeld:", lt_mean, "dagen"))
-    print(c(" De standarddeviattie van de doorlooptijd is:", lt_sd, "dagen"))
-  } 
-  
-  if (doorlooptijd == "SN procedure") {
-    accesstime <- melanomen2016[,22]
-    lt_mean <- mean(accesstime, na.rm = TRUE)
-    lt_sd <- round(sd(accesstime, na.rm = TRUE), digits = 3)
-    print(c("De doorlooptijd is gemiddeld:", lt_mean, "dagen"))
-    print(c(" De standarddeviattie van de doorlooptijd is:", lt_sd, "dagen"))
-  } 
-  
-  ## melanomen2016
+  ## head(allttests)
 }
