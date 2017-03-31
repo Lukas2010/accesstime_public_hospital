@@ -25,6 +25,16 @@ melanomendata <- function(directory) {
   print("2016 Data Mean")
   str(listmean2016, digits.d = 4)
   
+  ## calculation 2015 median
+  listmedian2015 <- lapply(melanomen2015[,c(14:22,27)], median, na.rm = TRUE)
+  print("2015 Data median")
+  str(listmedian2015, digits.d = 4)
+  
+  ## calculation 2016 median
+  listmedian2016 <- lapply(melanomen2016[,c(14:22,27)], median, na.rm = TRUE)
+  print("2016 Data median")
+  str(listmedian2016, digits.d = 4)
+  
   ## calculation 2015 sd
   listsd2015 <- lapply(melanomen2015[,c(14:22,27)], sd, na.rm = TRUE)
   print("2015 Data SD")
